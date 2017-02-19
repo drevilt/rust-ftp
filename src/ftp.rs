@@ -476,9 +476,7 @@ impl FtpStream {
         try!(self.reader.read_line(&mut line)
              .map_err(FtpError::ConnectionError));
 
-        if cfg!(feature = "debug_print") {
-            print!("FTP {}", line);
-        }
+        debug!("FTP {}", line);
 
         if line.len() < 5 {
             return Err(FtpError::InvalidResponse("error: could not read reply code".to_owned()));
@@ -498,9 +496,7 @@ impl FtpStream {
                 return Err(FtpError::ConnectionError(e));
             }
 
-            if cfg!(feature = "debug_print") {
-                print!("FTP {}", line);
-            }
+            debug!("FTP {}", line);
         }
 
         if expected_code.into_iter().any(|ec| code == *ec) {
