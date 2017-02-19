@@ -42,7 +42,7 @@ impl FtpStream {
     #[cfg(not(feature = "secure"))]
     pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<FtpStream> {
         TcpStream::connect(addr)
-            .map_err(|e| FtpError::ConnectionError(e))
+            .map_err(FtpError::ConnectionError)
             .and_then(|stream| {
                 let mut ftp_stream = FtpStream {
                     reader: BufReader::new(DataStream::Tcp(stream)),
@@ -51,7 +51,7 @@ impl FtpStream {
                     .map(|_| ftp_stream)
             })
     }
-    
+
     /// Creates an FTP Stream.
     #[cfg(feature = "secure")]
     pub fn connect<A: ToSocketAddrs>(addr: A) -> Result<FtpStream> {
@@ -66,7 +66,7 @@ impl FtpStream {
                     .map(|_| ftp_stream)
             })
     }
-    
+
     /// Switch to a secure mode if possible, using a provided SSL configuration.
     /// This method does nothing if the connect is already secured.
     ///
@@ -108,7 +108,7 @@ impl FtpStream {
         try!(secured_ftp_tream.read_response(status::COMMAND_OK));
         Ok(secured_ftp_tream)
     }
-    
+
     /// Switch to insecure mode. If the connection is already
     /// insecure does nothing.
     ///
@@ -143,15 +143,15 @@ impl FtpStream {
         };
         Ok(plain_ftp_stream)
     }
-    
+
     /// Execute command which send data back in a separate stream
     #[cfg(not(feature = "secure"))]
     fn data_command(&mut self, cmd: &str) -> Result<DataStream> {
         self.pasv()
             .and_then(|addr| self.write_str(cmd).map(|_| addr))
             .and_then(|addr| TcpStream::connect(addr)
-                      .map_err(|e| FtpError::ConnectionError(e)))
-            .map(|stream| DataStream::Tcp(stream))
+                      .map_err(FtpError::ConnectionError))
+            .map(DataStream::Tcp)
     }
 
     /// Execute command which send data back in a separate stream
@@ -263,7 +263,7 @@ impl FtpStream {
                 let port = ((msb as u16) << 8) + lsb as u16;
                 let addr = format!("{}.{}.{}.{}:{}", oct1, oct2, oct3, oct4, port);
                 SocketAddr::from_str(&addr)
-                    .map_err(|parse_err| FtpError::InvalidAddress(parse_err))
+                    .map_err(FtpError::InvalidAddress)
             })
     }
 
@@ -371,7 +371,7 @@ impl FtpStream {
         let mut data_stream = BufWriter::new(try!(self.data_command(&stor_command)));
         try!(self.read_response_in(&[status::ALREADY_OPEN, status::ABOUT_TO_SEND]));
         copy(r, &mut data_stream)
-            .map_err(|read_err| FtpError::ConnectionError(read_err))
+            .map_err(FtpError::ConnectionError)
             .map(|_| ())
     }
 
@@ -474,7 +474,7 @@ impl FtpStream {
     pub fn read_response_in(&mut self, expected_code: &[u32]) -> Result<Line> {
         let mut line = String::new();
         try!(self.reader.read_line(&mut line)
-             .map_err(|read_err| FtpError::ConnectionError(read_err)));
+             .map_err(FtpError::ConnectionError));
 
         if cfg!(feature = "debug_print") {
             print!("FTP {}", line);

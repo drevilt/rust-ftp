@@ -8,7 +8,7 @@ use ftp::FtpStream;
 #[test]
 fn test_ftp() {
     let mut ftp_stream = FtpStream::connect("127.0.0.1:21").unwrap();
-    let _ = ftp_stream.login("Doe", "mumble").unwrap();
+    ftp_stream.login("Doe", "mumble").unwrap();
 
     ftp_stream.mkdir("test_dir").unwrap();
     ftp_stream.cwd("test_dir").unwrap();

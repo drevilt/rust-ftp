@@ -13,10 +13,6 @@ categories = ["network-programming"]
 [badges]
 travis-ci = { repository = "mattnenterprise/rust-ftp" }
 
-[lib]
-name ="ftp"
-path = "src/lib.rs"
-
 [features]
 # Enable support of FTPS which requires openssl
 secure = ["openssl"]

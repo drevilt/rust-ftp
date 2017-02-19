@@ -18,7 +18,7 @@ fn test_ftp(addr: &str, user: &str, pass: &str) -> Result<(), FtpError> {
     println!("got data: {}", text);
 
     // Store a file
-    let file_data = format!("Some awesome file data man!!");
+    let file_data = "Some awesome file data man!!".to_string();
     let mut reader = Cursor::new(file_data.into_bytes());
     ftp_stream.put("my_random_file.txt", &mut reader).unwrap();
 

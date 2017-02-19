@@ -4,7 +4,7 @@ use std::convert::From;
 use std::error::Error;
 use std::fmt;
 
-/// A shorthand for a Result whose error type is always an FtpError.
+/// A shorthand for a Result whose error type is always an `FtpError`.
 pub type Result<T> = ::std::result::Result<T, FtpError>;
 
 /// `FtpError` is a library-global error type to describe the different kinds of
@@ -74,8 +74,8 @@ impl fmt::Display for FtpError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             FtpError::ConnectionError(ref ioerr) => write!(f, "FTP ConnectionError: {}", ioerr),
-            FtpError::SecureError(ref desc)      => write!(f, "FTP SecureError: {}", desc.clone()),
-            FtpError::InvalidResponse(ref desc)  => write!(f, "FTP InvalidResponse: {}", desc.clone()),
+            FtpError::SecureError(ref desc)      => write!(f, "FTP SecureError: {}", desc),
+            FtpError::InvalidResponse(ref desc)  => write!(f, "FTP InvalidResponse: {}", desc),
             FtpError::InvalidAddress(ref perr)   => write!(f, "FTP InvalidAddress: {}", perr),
         }
     }
